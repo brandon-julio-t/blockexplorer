@@ -1,36 +1,35 @@
-import { Alchemy, Network } from 'alchemy-sdk';
-import { useEffect, useState } from 'react';
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './App.css';
+import BlockDetailPage from './pages/Blocks/[id]';
+import Dashboard from './pages/Dashboard';
+import TransactionDetailPage from './pages/Transactions/[id]';
 
-// Refer to the README doc for more information about using API
-// keys in client-side code. You should never do this in production
-// level code.
-const settings = {
-  apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
-  network: Network.ETH_MAINNET,
-};
+const queryClient = new QueryClient();
 
-
-// In this week's lessons we used ethers.js. Here we are using the
-// Alchemy SDK is an umbrella library with several different packages.
-//
-// You can read more about the packages here:
-//   https://docs.alchemy.com/reference/alchemy-sdk-api-surface-overview#api-surface
-const alchemy = new Alchemy(settings);
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Dashboard />,
+  },
+  {
+    path: '/blocks/:id',
+    element: <BlockDetailPage />,
+  },
+  {
+    path: '/transactions/:id',
+    element: <TransactionDetailPage />,
+  },
+]);
 
 function App() {
-  const [blockNumber, setBlockNumber] = useState();
-
-  useEffect(() => {
-    async function getBlockNumber() {
-      setBlockNumber(await alchemy.core.getBlockNumber());
-    }
-
-    getBlockNumber();
-  });
-
-  return <div className="App">Block Number: {blockNumber}</div>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div className="container mx-auto my-4">
+        <RouterProvider router={router} />
+      </div>
+    </QueryClientProvider>
+  );
 }
 
 export default App;
